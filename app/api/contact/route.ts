@@ -1,3 +1,4 @@
+// app/api/contact/route.ts
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -14,21 +15,22 @@ export async function POST(req: Request) {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail', // Use your email provider
+      service: 'gmail',
       auth: {
-        user: 'rhythmjain523@gmail.com', // Your email
-        pass: 'liuyzhlggolbyqka', // App password or SMTP password
+        user: process.env.EMAIL_USER || 'rhythmjain523@gmail.com',
+        pass: process.env.EMAIL_PASS || 'liuyzhlggolbyqka',
       },
     });
 
     const mailOptions = {
       from: email,
-      to: 'rishav.sethi1806@gmail.com', // The email address entered by the user in the form
+      to: 'monkeydluffy82107@gmail.com',
       replyTo: email,
       subject: `New message from ${username}`,
       html: `
         <p>Dear Rishav Sethi,</p>
         <p>${message}</p>
+        <p>Contact: ${phone}</p>
         <br />
         <p>Best Regards,</p>
         <p>${username}</p>
@@ -44,4 +46,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-} 
+}

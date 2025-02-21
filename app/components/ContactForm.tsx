@@ -24,50 +24,56 @@ const ContactForm = () => {
     setValidationError('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    if (!formData.username || !formData.email || !formData.phone || !formData.message) {
-      setValidationError('Please fill in all the details first');
-      return;
-    }
-  
-    setIsSubmitting(true);
-  
-    // Update the time of message sent
-    const updatedFormData = {
-      ...formData,
-      time: new Date().toLocaleString()
-    };
-  
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFormData),
-      });
-  
-      if (!response.ok) throw new Error('Failed to send email');
-  
-      console.log('Email sent successfully');
-      setSubmitStatus('success');
-      setShowSuccess(true);
-  
-      setTimeout(() => setShowSuccess(false), 3000);
-  
-      setFormData({ username: '', email: '', phone: '', message: '', time: '' });
-    } catch (error) {
-      console.error(error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  
-    // Store in Firestore
-    firestore.collection('messages')
-      .add(updatedFormData)  // Use the updated form data with the correct time
-      .catch((error) => console.error('Error saving data:', error));
+// Update just the handleSubmit function in your ContactForm.tsx
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.username || !formData.email || !formData.phone || !formData.message) {
+    setValidationError('Please fill in all the details first');
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  // Update the time of message sent
+  const updatedFormData = {
+    ...formData,
+    time: new Date().toLocaleString()
   };
+
+  try {
+    // Make sure this URL matches your API route location in the App Router
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedFormData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to send email');
+    }
+
+    console.log('Email sent successfully');
+    setSubmitStatus('success');
+    setShowSuccess(true);
+
+    setTimeout(() => setShowSuccess(false), 3000);
+
+    setFormData({ username: '', email: '', phone: '', message: '', time: '' });
+    
+    // Store in Firestore after successful email
+    firestore.collection('messages')
+      .add(updatedFormData)
+      .catch((error) => console.error('Error saving data:', error));
+      
+  } catch (error) {
+    console.error(error);
+    setSubmitStatus('error');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   
   
 

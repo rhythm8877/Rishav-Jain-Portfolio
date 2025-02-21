@@ -103,7 +103,7 @@ export default function Timeline() {
       title: "Class 12",
       description: "Completed Class 12 (Science) with 96%.",
       icon: "bx-file",
-      image: "/blood.jpeg?height=200&width=400"
+      image: "/placeholder.svg?height=200&width=400"
     },
     {
       date: "2014",

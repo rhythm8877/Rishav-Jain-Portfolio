@@ -25,9 +25,10 @@ export default function Hero() {
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 mb-10 md:mb-0">
           <h1 
-            className="text-4xl md:text-6xl font-bold mb-4 opacity-0 animate-[slideInLeft_1s_ease-out_forwards] hover:scale-105 hover:text-yellow-300 transition-all duration-300 cursor-pointer"
+            className="text-4xl md:text-6xl font-bold mb-4 opacity-0 animate-[slideInLeft_1s_ease-out_forwards] hover:scale-105 hover:text-yellow-300 transition-all duration-300 cursor-pointer leading-tight"
           >
-            Hello, I'm Er. Rishav Sethi
+            <span className="block">Hello,</span>
+            <span className="block">I'm Er. Rishav Sethi</span>
           </h1>
           <p 
             className="text-xl mb-8 opacity-0 animate-[slideInUp_1s_ease-out_0.3s_forwards] hover:translate-x-2 hover:text-violet-500 dark:hover:text-blue-200 transition-all duration-300"
@@ -71,7 +72,15 @@ export default function Hero() {
           <img
             src="/home.png"
             alt="A person in a white vest and glasses"
-            className="rounded-full border-4 border-white shadow-lg opacity-0 animate-[slideInRight_1s_ease-out_0.3s_forwards] hover:scale-105 hover:shadow-2xl hover:border-violet-500 dark:hover:border-blue-200 transition-all duration-500"
+            className="rounded-full border-4 border-white dark:border-gray-700 
+              shadow-lg dark:shadow-purple-500/20
+              opacity-0 animate-[slideInRight_1s_ease-out_0.3s_forwards] 
+              transform transition-all duration-700 ease-in-out
+              hover:scale-110 hover:rotate-6 
+              hover:-translate-y-2
+              hover:shadow-2xl dark:hover:shadow-purple-500/40
+              hover:border-violet-500 dark:hover:border-blue-200
+              dark:hover:brightness-110"
           />
         </div>
       </div>

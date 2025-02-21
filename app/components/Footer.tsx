@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
-            <h3 className="text-2xl font-bold">Rishav Sethi</h3>
+            <h3 className="text-2xl font-bold">Er. Rishav Sethi</h3>
             <p className="mt-2">Innovating for a better tomorrow</p>
           </div>
           <div className="flex mt-8 space-x-4 animate-[fadeIn_1.8s_ease-in]">
