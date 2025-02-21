@@ -1,10 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',  // For static site generation
   images: {
     unoptimized: true
   },
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/.netlify/functions/:path*',
+        destination: '/.netlify/functions/:path*',
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 

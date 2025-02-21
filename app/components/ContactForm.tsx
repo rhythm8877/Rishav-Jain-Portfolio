@@ -32,19 +32,38 @@ const ContactForm = () => {
     setSubmitStatus("idle")
 
     try {
-      // Submit to Netlify function instead of form action
-      const response = await fetch('/.netlify/functions/submit-form', {
+      // Use full URL in development, relative in production
+      const functionUrl = process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:8888/.netlify/functions/submit-form'
+        : '/.netlify/functions/submit-form';
+
+      const response = await fetch(functionUrl, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          name: formData.username,  // Make sure we're sending username as name
+          name: formData.username,
           email: formData.email,
           phone: formData.phone,
           message: formData.message
         })
       });
 
+      // Log the raw response for debugging
+      const rawResponse = await response.text();
+      console.log('Raw response:', rawResponse);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(rawResponse);
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        throw new Error('Invalid response from server');
+      }
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(responseData.message || 'Failed to submit form');
       }
 
       console.log("Form submitted successfully")
@@ -55,6 +74,7 @@ const ContactForm = () => {
     } catch (error) {
       console.error("Form submission error:", error)
       setSubmitStatus("error")
+      setValidationError(error instanceof Error ? error.message : 'Failed to submit form')
     } finally {
       setIsSubmitting(false)
     }

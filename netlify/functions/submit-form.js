@@ -1,35 +1,55 @@
 const nodemailer = require('nodemailer');
 
 exports.handler = async (event, context) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
 
-  const { name, email, phone, message } = JSON.parse(event.body);
-
-  // Validate fields
-  if (!name || !email || !phone || !message) {
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 400,
-      body: JSON.stringify({ message: 'All fields are required' })
+      statusCode: 200,
+      headers
     };
   }
 
-  // Set up nodemailer transporter
-  let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ message: 'Method not allowed' })
+    };
+  }
 
   try {
-    // Send email using the user's email address in the from field
+    const { name, email, phone, message } = JSON.parse(event.body);
+
+    // Validate fields
+    if (!name || !email || !phone || !message) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: 'All fields are required' })
+      };
+    }
+
+    // Set up nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // Send email
     await transporter.sendMail({
-      from: `"${name}" <${email}>`,  // Use the user's actual email
+      from: `"${name}" <${email}>`,
       to: 'monkeydluffy82107@gmail.com',
       subject: `New contact form submission from ${name}`,
       text: `
@@ -42,13 +62,21 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Form submitted successfully' })
+      headers,
+      body: JSON.stringify({ 
+        message: 'Form submitted successfully',
+        success: true 
+      })
     };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Function error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Error submitting form' })
+      headers,
+      body: JSON.stringify({ 
+        message: 'Error processing form submission',
+        error: error.message
+      })
     };
   }
 };
