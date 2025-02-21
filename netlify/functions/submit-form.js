@@ -26,6 +26,7 @@ exports.handler = async (event, context) => {
 
   try {
     const { name, email, phone, message } = JSON.parse(event.body);
+    console.log('Received form data:', { name, email, phone, message });
 
     // Validate fields
     if (!name || !email || !phone || !message) {
@@ -36,6 +37,11 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Validate email configuration
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      throw new Error('Email configuration missing');
+    }
+
     // Set up nodemailer transporter
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -44,11 +50,16 @@ exports.handler = async (event, context) => {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-      }
+      },
+      debug: true
     });
 
+    // Verify transporter
+    await transporter.verify();
+    console.log('Transporter verified');
+
     // Send email
-    await transporter.sendMail({
+    const mailResult = await transporter.sendMail({
       from: `"${name}" <${email}>`,
       to: 'monkeydluffy82107@gmail.com',
       subject: `New contact form submission from ${name}`,
@@ -60,22 +71,26 @@ exports.handler = async (event, context) => {
       `
     });
 
+    console.log('Email sent:', mailResult);
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({ 
         message: 'Form submitted successfully',
-        success: true 
+        success: true,
+        id: mailResult.messageId
       })
     };
   } catch (error) {
-    console.error('Function error:', error);
+    console.error('Detailed error:', error);
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        message: 'Error processing form submission',
-        error: error.message
+        message: error.message || 'Error processing form submission',
+        error: true,
+        details: error.toString()
       })
     };
   }
