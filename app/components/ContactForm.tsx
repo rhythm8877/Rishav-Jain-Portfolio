@@ -32,14 +32,22 @@ const ContactForm = () => {
     setSubmitStatus("idle")
 
     try {
-      // Submit to Netlify
-      await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData).toString(),
-      })
+      // Submit to Netlify function instead of form action
+      const response = await fetch('/.netlify/functions/submit-form', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.username,  // Make sure we're sending username as name
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message
+        })
+      });
 
-      console.log("Form submitted successfully to Netlify")
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      console.log("Form submitted successfully")
       setSubmitStatus("success")
       setShowSuccess(true)
       setTimeout(() => setShowSuccess(false), 3000)
@@ -80,7 +88,7 @@ const ContactForm = () => {
           <input type="hidden" name="form-name" value="contact" />
           <p className="hidden">
             <label>
-              Don’t fill this out if you’re human: <input name="bot-field" />
+              Don't fill this out if you're human: <input name="bot-field" />
             </label>
           </p>
           <div>
