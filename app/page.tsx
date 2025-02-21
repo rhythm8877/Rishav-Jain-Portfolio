@@ -13,7 +13,7 @@ import ContactForm from './components/ContactForm'
 import Footer from "./components/Footer"
 import Testimonials from "./components/Testimonials"
 import VideoGallery from "./components/VideoGallery"
-import { firestore } from "./firebaseConfig"
+import { db } from "./firebaseConfig"
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -35,7 +35,7 @@ export default function Home() {
     }
   }, [darkMode])
 
-  
+
 
   return (
     <div

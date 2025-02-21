@@ -1,4 +1,18 @@
 const nodemailer = require('nodemailer');
+const admin = require('firebase-admin');
+
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    })
+  });
+}
+
+const db = admin.firestore();
 
 exports.handler = async (event, context) => {
   // Set CORS headers
@@ -57,6 +71,15 @@ exports.handler = async (event, context) => {
     // Verify transporter
     await transporter.verify();
     console.log('Transporter verified');
+
+    // Store in Firestore
+    await db.collection('form-submissions').add({
+      name,
+      email,
+      phone,
+      message,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
 
     // Send email
     const mailResult = await transporter.sendMail({

@@ -1,18 +1,14 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDL5RVoULCqV3rnuHFfyYY5yU0Uyxfpvo0",
   authDomain: "rishav-jain-portfolio-4f66f.firebaseapp.com",
   projectId: "rishav-jain-portfolio-4f66f",
-  storageBucket: "rishav-jain-portfolio-4f66f.firebasestorage.app",
+  storageBucket: "rishav-jain-portfolio-4f66f.appspot.com",
   messagingSenderId: "40989286155",
-  appId: "1:40989286155:web:a518d7ec0045b679310c0e",
-  measurementId: "G-K3LZZ07HMJ"
+  appId: "1:40989286155:web:a518d7ec0045b679310c0e"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-export const firestore = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
