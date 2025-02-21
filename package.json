@@ -63,7 +63,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "@netlify/plugin-nextjs": "latest"
+    "@netlify/plugin-nextjs": "5.9.4"
   },
   "devDependencies": {
     "@types/node": "^22",
