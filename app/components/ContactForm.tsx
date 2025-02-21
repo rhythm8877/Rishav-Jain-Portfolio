@@ -25,6 +25,7 @@ const ContactForm = () => {
   };
 
 // Update just the handleSubmit function in your ContactForm.tsx
+// Update your handleSubmit function in ContactForm.tsx
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -34,6 +35,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   setIsSubmitting(true);
+  setSubmitStatus('idle');
 
   // Update the time of message sent
   const updatedFormData = {
@@ -42,16 +44,26 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
 
   try {
-    // Make sure this URL matches your API route location in the App Router
-    const response = await fetch('/api/contact', {
+    console.log('Submitting form data:', updatedFormData);
+    
+    // Explicitly use the full URL for debugging
+    const apiUrl = window.location.origin + '/api/contact';
+    console.log('Submitting to:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(updatedFormData),
     });
+    
+    console.log('Response status:', response.status);
+    const responseData = await response.json();
+    console.log('Response data:', responseData);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to send email');
+      throw new Error(responseData.error || `Request failed with status ${response.status}`);
     }
 
     console.log('Email sent successfully');
@@ -62,13 +74,16 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     setFormData({ username: '', email: '', phone: '', message: '', time: '' });
     
-    // Store in Firestore after successful email
-    firestore.collection('messages')
-      .add(updatedFormData)
-      .catch((error) => console.error('Error saving data:', error));
+    // Store in Firestore
+    try {
+      await firestore.collection('messages').add(updatedFormData);
+      console.log('Data saved to Firestore');
+    } catch (firestoreError) {
+      console.error('Error saving to Firestore:', firestoreError);
+    }
       
   } catch (error) {
-    console.error(error);
+    console.error('Form submission error:', error);
     setSubmitStatus('error');
   } finally {
     setIsSubmitting(false);
