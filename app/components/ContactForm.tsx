@@ -100,17 +100,7 @@ const ContactForm = () => {
         <form
           onSubmit={handleSubmit}
           className="space-y-6"
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
         >
-          <input type="hidden" name="form-name" value="contact" />
-          <p className="hidden">
-            <label>
-              Don't fill this out if you're human: <input name="bot-field" />
-            </label>
-          </p>
           <div>
             <label htmlFor="username" className="block text-left text-sm font-medium leading-6 text-white">
               Your Name
