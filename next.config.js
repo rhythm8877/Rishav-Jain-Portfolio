@@ -5,7 +5,6 @@ const nextConfig = {
     unoptimized: true
   },
   reactStrictMode: true,
-  target: 'serverless'
 }
 
 module.exports = nextConfig 

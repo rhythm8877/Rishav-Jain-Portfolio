@@ -1,5 +1,5 @@
 [build]
-  command = "next build"
+  command = "npm run build"
   publish = ".next"
   functions = "netlify/functions"
 
@@ -8,6 +8,9 @@
 
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [build.environment]
   NODE_VERSION = "18"
+  NEXT_USE_NETLIFY_EDGE = "true"
+  NEXT_TELEMETRY_DISABLED = "1"
