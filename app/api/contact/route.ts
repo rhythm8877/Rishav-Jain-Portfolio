@@ -8,8 +8,14 @@ export async function POST(req: Request) {
 
   if (!username || !email || !phone || !message) {
     return NextResponse.json(
-      { error: 'All fields are required' },
-      { status: 400 }
+      { message: 'Email sent successfully' },
+      { 
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      }
     );
   }
 
