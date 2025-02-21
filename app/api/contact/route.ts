@@ -14,8 +14,17 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
+  console.log('Request method:', req.method);
+  console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+  
   console.log('API route hit:', new Date().toISOString());
   
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+
   try {
     const body = await req.json();
     console.log('Request body received:', JSON.stringify(body));
@@ -67,11 +76,7 @@ export async function POST(req: Request) {
       { message: 'Email sent successfully', id: info.messageId },
       { 
         status: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        }
+        headers: corsHeaders
       }
     );
   } catch (error) {
@@ -80,11 +85,7 @@ export async function POST(req: Request) {
       { error: 'Error sending email', details: (error as Error).message },
       { 
         status: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        }
+        headers: corsHeaders
       }
     );
   }

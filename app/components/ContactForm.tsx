@@ -1,7 +1,6 @@
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Send, Twitter } from 'lucide-react';
 import React, { useState } from 'react';
 import { firestore } from '../firebaseConfig';
-import { time } from 'console';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -35,46 +34,34 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   setIsSubmitting(true);
-  setSubmitStatus('idle');
 
-  // Update the time of message sent
+  // Update time
   const updatedFormData = {
     ...formData,
     time: new Date().toLocaleString()
   };
 
   try {
-    console.log('Submitting form data:', updatedFormData);
-    
-    // Explicitly use the full URL for debugging
-    const apiUrl = window.location.origin + '/api/contact';
-    console.log('Submitting to:', apiUrl);
-    
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updatedFormData),
+    // Create form data object for submission
+    const formSubmitData = new FormData();
+    Object.entries(updatedFormData).forEach(([key, value]) => {
+      formSubmitData.append(key, value as string);
     });
-    
-    console.log('Response status:', response.status);
-    const responseData = await response.json();
-    console.log('Response data:', responseData);
 
-    if (!response.ok) {
-      throw new Error(responseData.error || `Request failed with status ${response.status}`);
-    }
+    // Use the fetch API with the form's action (which Netlify sets up)
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formSubmitData as any).toString()
+    });
 
-    console.log('Email sent successfully');
+    console.log('Form submitted successfully');
     setSubmitStatus('success');
     setShowSuccess(true);
-
     setTimeout(() => setShowSuccess(false), 3000);
-
     setFormData({ username: '', email: '', phone: '', message: '', time: '' });
     
-    // Store in Firestore
+    // Your Firestore code can remain as is
     try {
       await firestore.collection('messages').add(updatedFormData);
       console.log('Data saved to Firestore');
@@ -168,7 +155,9 @@ const handleSubmit = async (e: React.FormEvent) => {
               Contact Me
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" name="contact" 
+  method="POST" 
+  data-netlify="true">
               <div>
                 <input
                   type="text"
