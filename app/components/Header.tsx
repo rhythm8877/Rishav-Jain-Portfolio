@@ -1,7 +1,7 @@
 "use client"
 
 import { Menu, Moon, Sun, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface HeaderProps {
   darkMode: boolean
@@ -11,36 +11,40 @@ interface HeaderProps {
 export default function Header({ darkMode, setDarkMode }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const isNavigatingRef = useRef(false)
 
   useEffect(() => {
-    // Always start in light mode
     setDarkMode(false)
     document.documentElement.classList.remove('dark')
     localStorage.setItem('darkMode', 'false')
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-          }
-        })
-      },
-      { 
-        threshold: 0.2,
-        rootMargin: '-80px 0px -20% 0px' // Adjusted rootMargin to better handle the fixed header
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('section[id]'))
+    const headerOffset = 120
+
+    const handleScroll = () => {
+      // Don't update active section if we're in the middle of a navigation click
+      if (isNavigatingRef.current) {
+        return
       }
-    )
 
-    // Wait for DOM to be ready
-    setTimeout(() => {
-      const sections = document.querySelectorAll('section[id]')
+      const scrollPosition = window.scrollY + headerOffset
+      let currentSection = 'home'
+
       sections.forEach((section) => {
-        observer.observe(section)
+        if (scrollPosition >= section.offsetTop) {
+          currentSection = section.id
+        }
       })
-    }, 100)
 
-    return () => observer.disconnect()
+      setActiveSection(currentSection)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   const toggleDarkMode = () => {
@@ -59,6 +63,15 @@ export default function Header({ darkMode, setDarkMode }: HeaderProps) {
     e.preventDefault()
     const element = document.getElementById(id)
     if (element) {
+      // Set navigation flag to prevent scroll handler from interfering
+      isNavigatingRef.current = true
+      
+      // Update active section immediately on click
+      setActiveSection(id)
+      
+      // Update URL hash
+      window.history.pushState({}, '', id === 'home' ? '/#' : `/#${id}`)
+      
       const headerOffset = 80 // Height of your fixed header
       const elementPosition = element.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset
@@ -68,10 +81,22 @@ export default function Header({ darkMode, setDarkMode }: HeaderProps) {
         behavior: 'smooth'
       })
       
-      // Update active section immediately on click
-      setActiveSection(id)
-      // Update URL hash
-      window.history.pushState({}, '', id === 'home' ? '/#' : `/#${id}`)
+      // Re-enable scroll-based updates after scroll animation completes
+      // Smooth scroll typically takes ~500-1000ms, using 1500ms to be safe
+      setTimeout(() => {
+        isNavigatingRef.current = false
+        // Verify the active section matches the final scroll position
+        const sections = Array.from(document.querySelectorAll<HTMLElement>('section[id]'))
+        const scrollPosition = window.scrollY + 120
+        let currentSection = 'home'
+        sections.forEach((section) => {
+          if (scrollPosition >= section.offsetTop) {
+            currentSection = section.id
+          }
+        })
+        // Update to match final scroll position
+        setActiveSection(currentSection)
+      }, 1500)
     }
   }
 
@@ -160,39 +185,19 @@ export default function Header({ darkMode, setDarkMode }: HeaderProps) {
       {menuOpen && (
         <nav className="md:hidden bg-white dark:bg-gray-900 py-4">
           <div className="container mx-auto px-4 flex flex-col space-y-4">
-            <a href="#home" className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400">
-              Home
-            </a>
-            <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400">
-              About
-            </a>
-            <a
-              href="#services"
-              className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
-            >
-              Services
-            </a>
-            <a
-              href="#projects"
-              className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
-            >
-              Projects
-            </a>
-            <a
-              href="#gallery"
-              className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
-            >
-              Gallery
-            </a>
-            <a
-              href="#timeline"
-              className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
-            >
-              Timeline
-            </a>
-            <a href="#blog" className="text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400">
-              Blog
-            </a>
+            {['home','about','services','projects','gallery','timeline','blog'].map((sectionId) => (
+              <a
+                key={sectionId}
+                href={`#${sectionId}`}
+                onClick={(e) => {
+                  handleClick(e, sectionId)
+                  setMenuOpen(false)
+                }}
+                className={`capitalize text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 ${activeSection === sectionId ? 'font-semibold text-violet-500 dark:text-blue-200' : ''}`}
+              >
+                {sectionId}
+              </a>
+            ))}
           </div>
         </nav>
       )}

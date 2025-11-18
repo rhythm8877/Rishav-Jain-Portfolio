@@ -100,31 +100,51 @@ export default function Blog() {
     : initialBlogPosts
 
   return (
-    <section id="blog" className="py-20 bg-gray-100 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <h2 className={`text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800 dark:text-white ${
-          isVisible ? 'animate-fade-up' : 'opacity-0'
-        }`}>
-          Latest Blog Posts
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section
+      id="blog"
+      className="relative scroll-mt-24 bg-gradient-to-b from-white via-purple-50/20 to-white py-24 dark:from-[#0f1425] dark:via-[#141c33] dark:to-[#0f1425]"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-violet-200/40 via-transparent to-transparent dark:from-violet-900/20" aria-hidden="true" />
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className={`text-center transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+          <p className="text-sm font-semibold uppercase tracking-[0.5em] text-violet-500 dark:text-violet-300">
+            Insights
+          </p>
+          <h2 className="mt-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl">Latest Blog Posts</h2>
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
+            Thoughts on leadership, innovation, and building enduring products for the region and beyond.
+          </p>
+        </div>
+
+        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
           {allBlogPosts.map((post, index) => (
             <div 
               key={index} 
-              className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden 
-                hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-pink-600/20 
-                transform transition-all duration-300 hover:scale-105
+              className={`group rounded-[28px] border border-white/50 bg-white/80 p-1 shadow-[0_25px_80px_-40px_rgba(124,58,237,0.4)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_35px_90px_-45px_rgba(99,102,241,0.65)] dark:border-white/10 dark:bg-white/5 dark:shadow-[0_25px_90px_-60px_rgba(0,0,0,0.9)]
                 ${isVisible ? 'animate-fade-up' : 'opacity-0'}`}
               style={{ animationDelay: `${index * 200}ms` }}
             >
-              <img src={post.image || "/placeholder.svg"} alt={post.title} className="w-full h-48 object-cover" />
-              <div className="p-6">
-                <span className="text-sm text-violet-600 dark:text-sky-500 font-semibold">{post.category}</span>
-                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{post.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">{post.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{post.date}</span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{post.author}</span>
+              <div className="h-full rounded-[24px] bg-gradient-to-b from-white via-purple-50/40 to-white p-1 dark:from-[#151b2f] dark:via-[#1a2237] dark:to-[#121728]">
+                <div className="flex h-full flex-col overflow-hidden rounded-[20px] bg-white/90 transition-colors duration-500 group-hover:bg-gradient-to-br group-hover:from-violet-500/10 group-hover:via-pink-500/10 group-hover:to-sky-400/10 dark:bg-white/5 dark:group-hover:bg-white/10">
+                  <div className="relative h-48 overflow-hidden">
+                    <img src={post.image || "/placeholder.svg"} alt={post.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/10 to-black/40 opacity-0 transition duration-500 group-hover:opacity-100" />
+                    <span className="absolute left-4 top-4 rounded-full border border-white/60 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-gray-800 dark:border-white/20 dark:bg-white/10 dark:text-white/80">
+                      {post.category}
+                    </span>
+                  </div>
+                  <div className="flex grow flex-col gap-4 p-6">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 transition-colors group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-200">
+                        {post.title}
+                      </h3>
+                      <p className="mt-3 text-gray-600 dark:text-gray-300">{post.description}</p>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                      <span>{post.date}</span>
+                      <span className="font-semibold text-gray-700 dark:text-gray-200">{post.author}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -135,9 +155,7 @@ export default function Blog() {
         <div className="flex justify-center mt-12">
           <button
             onClick={() => setShowMore(!showMore)}
-            className={`px-6 py-3 bg-violet-500 dark:bg-sky-900 text-white rounded-lg 
-              transition-all duration-300 font-semibold
-              hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-pink-600/20
+            className={`rounded-full border border-transparent bg-gradient-to-r from-violet-600 to-pink-500 px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-white transition-all duration-300 hover:from-violet-500 hover:to-pink-400 dark:from-sky-900 dark:to-purple-700
               ${isVisible ? 'animate-fade-up' : 'opacity-0'}`}
             style={{ animationDelay: `${allBlogPosts.length * 200}ms` }}
           >

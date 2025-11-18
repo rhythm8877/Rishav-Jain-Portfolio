@@ -12,7 +12,6 @@ import { useEffect, useState } from "react"
 import ContactForm from './components/ContactForm'
 import Footer from "./components/Footer"
 import Testimonials from "./components/Testimonials"
-import VideoGallery from "./components/VideoGallery"
 import { db } from "./firebaseConfig"
 
 export default function Home() {
@@ -48,7 +47,6 @@ export default function Home() {
         <Services />
         <Projects />
         <Gallery />
-        <VideoGallery />
         <Timeline />
         <Blog />
         <Testimonials />
